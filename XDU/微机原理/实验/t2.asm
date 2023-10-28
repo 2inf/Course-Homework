@@ -1,0 +1,283 @@
+DATA SEGMENT
+    STR1 DB 'PLEASE INPUT SCORES WITH SPACE:',13,10,'$'
+    STR10 DB 13,10,'VALID SCORES ARE:','$'
+    STR2 DB 13,10,13,10,'THE HIGHEST SCORE:','$'
+    STR3 DB 13,10,'THE LOWEST SCORE:','$'
+    STR4 DB 13,10,'THE AVERAGE SCORE:','$'
+    STR5 DB 13,10,13,10,'SCORE BETWEEN 90 AND 100:','$'
+    STR6 DB 13,10,'SCORE BETWEEN 80 AND 89:','$'
+    STR7 DB 13,10,'SCORE BETWEEN 70 AND 79:','$'
+    STR8 DB 13,10,'SCORE BETWEEN 60 AND 69:','$'
+    STR9 DB 13,10,'SCORE BELOW 60:','$'
+    STR0 DB 13,10,'COUNT OF INVALID INPUT:','$' 
+    NUMS DW 100 DUP(?)
+    MAXS DW 0 ; HIGHEST SCORE
+    MINS DW 100 ; LOWEST SCORE
+    SUM DW 0 ; SUM OF SCORES
+    C1 DW 0 ; 90-100
+    C2 DW 0 ; 80-89
+    C3 DW 0 ; 70-79
+    C4 DW 0 ; 60-69
+    C5 DW 0 ; 0-59
+    C0 DW 0 ; INVALID 
+DATA ENDS
+
+STACK SEGMENT STACK 'STACK'
+    DW 256 DUP(?)    
+STACK ENDS
+
+CODE SEGMENT
+    ASSUME CS:CODE,DS:DATA,SS:STACK
+START:
+    MOV AX, DATA
+    MOV DS, AX
+    MOV AX, STACK
+    MOV SS, AX
+    
+    XOR SI, SI
+    XOR DI, DI
+    
+    MOV DX, OFFSET STR1
+    MOV AH, 9
+    INT 21H
+    CALL INPUT
+    
+    MOV CX, DI
+    PUSH CX
+    
+    MOV DX, OFFSET STR10 ; VALID SCORES
+    MOV AH, 9
+    INT 21H
+    XOR DI, DI
+FOR1:
+    LEA SI, NUMS[DI]
+    CALL PRINT
+    MOV DL, 20H
+    MOV AH, 2
+    INT 21H
+    ADD DI, 2
+    LOOP FOR1
+    POP CX
+    
+    MOV DX, OFFSET STR2 ; 最高分
+    MOV AH, 9
+    INT 21H
+    LEA SI, MAXS
+    CALL PRINT
+    
+    MOV DX, OFFSET STR3 ; 最低分
+    MOV AH, 9
+    INT 21H
+    LEA SI, MINS
+    CALL PRINT
+    
+    MOV DX, OFFSET STR4 ; 平均分
+    MOV AH, 9
+    INT 21H
+    XOR DX, DX
+    MOV AX, SUM
+    DIV CX
+    MOV SUM, AX
+    LEA SI, SUM
+    CALL PRINT ; 整数部分
+    
+    MOV BX, 10
+    MOV AX, DX
+    MUL BX
+    DIV CX
+    MOV SUM, AX
+    SHL DX, 1
+    CMP DX, CX
+    JL NOCARRY
+    INC SUM  
+NOCARRY:
+    LEA SI, SUM
+    
+    MOV DL, 2EH
+    MOV AH, 2
+    INT 21H 
+    CALL PRINT ; 小数部分
+    
+    MOV DX, OFFSET STR5 ; 90-100
+    MOV AH, 9
+    INT 21H
+    LEA SI, C1
+    CALL PRINT
+    
+    MOV DX, OFFSET STR6 ; 80-89
+    MOV AH, 9
+    INT 21H
+    LEA SI, C2
+    CALL PRINT
+    
+    MOV DX, OFFSET STR7 ; 70-79
+    MOV AH, 9
+    INT 21H
+    LEA SI, C3
+    CALL PRINT
+    
+    MOV DX, OFFSET STR8 ; 60-69
+    MOV AH, 9
+    INT 21H
+    LEA SI, C4
+    CALL PRINT
+    
+    MOV DX, OFFSET STR9 ; 0-59
+    MOV AH, 9
+    INT 21H
+    LEA SI, C5
+    CALL PRINT
+    
+    MOV DX, OFFSET STR0 ; INVALID
+    MOV AH, 9
+    INT 21H
+    LEA SI, C0
+    CALL PRINT
+    
+    MOV AH, 4CH
+    INT 21H
+    
+; 输入子程序
+INPUT PROC NEAR
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+    
+    XOR BX, BX
+    XOR DX, DX
+    
+CHECK:
+    MOV AH, 1
+    INT 21H
+    CMP AL, 0DH ; 回车    
+    JZ IN_OVER
+    CMP AL, 20H ; 空格
+    JZ CONTENT
+    CMP DL, 0
+    JNZ CHECK ; 已经不合法不继续比较
+    SUB AL, 30H
+    JL IN_ERROR
+    CMP AL, 09H
+    JG IN_ERROR
+    MOV AH, 0
+    XCHG AX, BX
+    MOV CX, 10
+    MUL CX
+    ADD AX, BX
+    CMP AX, 100
+    JG IN_ERROR
+    XCHG AX, BX
+    JMP CHECK
+CONTENT:
+    CMP DL, 0
+    JNZ CASE0
+    MOV NUMS[SI], BX
+    ADD SI, 2
+    INC DI
+    ADD SUM, BX
+    CMP MAXS, BX
+    JL UPDATE_MAX
+    CMP MINS, BX
+    JG UPDATE_MIN 
+COMPARE:
+    CMP BX, 60
+    JL CASE5
+    CMP BX, 70
+    JL CASE4
+    CMP BX, 80
+    JL CASE3
+    CMP BX, 90
+    JL CASE2
+    JMP CASE1
+UPDATE_MAX: ; UPDATE HIGHEST SCORE
+    MOV MAXS, BX
+    CMP MINS, BX
+    JG UPDATE_MIN
+    JMP COMPARE
+UPDATE_MIN: ; UPDATE LOWEST SCORE
+    MOV MINS, BX
+    JMP COMPARE
+CASE0: ; INVALID
+    INC C0
+    JMP OVER
+CASE1: ; 90-100
+    INC C1
+    JMP OVER
+CASE2: ; 80-89
+    INC C2
+    JMP OVER
+CASE3: ; 70-79
+    INC C3
+    JMP OVER
+CASE4: ; 60-69
+    INC C4
+    JMP OVER
+CASE5: ; 0-59
+    INC C5
+    JMP OVER    
+CONTINUE:
+    XOR BX, BX
+    XOR DL, DL
+    JMP CHECK
+IN_ERROR:
+    XOR BX, BX
+    INC DL ; DL != 0 存在无效数字
+    JMP CHECK
+IN_OVER:
+    INC DH
+    CMP DL, 0
+    JNZ OVER
+    MOV NUMS[SI], BX
+    INC DI
+    
+    ; 最后一个数相关操作
+    ADD SUM, BX
+    CMP MAXS, BX
+    JL UPDATE_MAX
+    CMP MINS, BX
+    JG UPDATE_MIN
+    JMP COMPARE
+OVER:
+    CMP DH, 0
+    JZ CONTINUE
+        
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+INPUT ENDP
+
+PRINT PROC NEAR
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+    
+    MOV AX, [SI]
+    MOV BX, 10
+    MOV CX, 0
+INIT:
+    XOR DX, DX
+    DIV BX ; 商 AX 余 DX
+    INC CX
+    PUSH DX
+    CMP AX, 0
+    JNZ INIT
+OUTPUT:
+    POP DX
+    OR DX, 30H
+    MOV AH, 2
+    INT 21H
+    LOOP OUTPUT
+    
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+PRINT ENDP
+
+CODE ENDS
+END START
