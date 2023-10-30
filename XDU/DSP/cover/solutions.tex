@@ -1,0 +1,189 @@
+\documentclass[cs4size,a4paper]{ctexart}  
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{color,xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+
+
+% 设置\today格式
+%\CTEXoptions[today=old]
+%\CTEXoptions[today=big]
+\CTEXoptions[today=small]
+
+\pagestyle{fancy}
+
+\lhead{Xidian University}
+\rhead{Data Structure and Algorithm}
+\cfoot{第\thepage 页}
+
+
+% 定义可能使用到的颜色
+\definecolor{CPPLight}  {HTML} {686868}
+\definecolor{CPPSteel}  {HTML} {888888}
+\definecolor{CPPDark}   {HTML} {262626}
+\definecolor{CPPBlue}   {HTML} {4172A3}
+\definecolor{CPPGreen}  {HTML} {487818}
+\definecolor{CPPBrown}  {HTML} {A07040}
+\definecolor{CPPRed}    {HTML} {AD4D3A}
+\definecolor{CPPViolet} {HTML} {7040A0}
+\definecolor{CPPGray}  {HTML} {B8B8B8}
+\lstset{
+	columns=fixed,       
+	numbers=left,                                        % 在左侧显示行号
+	frame=none,                                          % 不显示背景边框
+	backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色,
+	keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+	numberstyle=\footnotesize\color{darkgray},           % 设定行号格式
+	commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+	stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+	showstringspaces=false,                              % 不显示字符串中的空格
+	% language=c++,                                        % 设置语言
+	breaklines = true,                                   % 自动换行
+	morekeywords={alignas,continute,friend,register,true,alignof,decltype,goto,
+		reinterpret_cast,try,asm,defult,if,return,typedef,auto,delete,inline,short,
+		typeid,bool,do,int,signed,typename,break,double,long,sizeof,union,case,
+		dynamic_cast,mutable,static,unsigned,catch,else,namespace,static_assert,using,
+		char,enum,new,static_cast,virtual,char16_t,char32_t,explict,noexcept,struct,
+		void,export,nullptr,switch,volatile,class,extern,operator,template,wchar_t,
+		const,false,private,this,while,constexpr,float,protected,thread_local,
+		const_cast,for,public,throw,std},
+	emph={map,set,multimap,multiset,unordered_map,unordered_set,
+		unordered_multiset,unordered_multimap,vector,string,list,deque,
+		array,stack,forwared_list,iostream,memory,shared_ptr,unique_ptr,
+		random,bitset,ostream,istream,cout,cin,endl,move,default_random_engine,
+		uniform_int_distribution,iterator,algorithm,functional,bing,numeric,},
+	emphstyle=\color{CPPViolet}, 
+}
+
+% 字体
+\newcommand{\chuhao}{\fontsize{42.2pt}{\baselineskip}\selectfont}
+\newcommand{\xiaochu}{\fontsize{36.1pt}{\baselineskip}\selectfont}
+\newcommand{\yihao}{\fontsize{26.1pt}{\baselineskip}\selectfont}
+\newcommand{\xiaoyi}{\fontsize{24.1pt}{\baselineskip}\selectfont}
+\newcommand{\erhao}{\fontsize{22.1pt}{\baselineskip}\selectfont}
+\newcommand{\xiaoer}{\fontsize{18.1pt}{\baselineskip}\selectfont}
+\newcommand{\sanhao}{\fontsize{16.1pt}{\baselineskip}\selectfont}
+\newcommand{\xiaosan}{\fontsize{15.1pt}{\baselineskip}\selectfont}
+\newcommand{\sihao}{\fontsize{14.1pt}{\baselineskip}\selectfont}
+\newcommand{\xiaosi}{\fontsize{12.1pt}{\baselineskip}\selectfont}
+\newcommand{\wuhao}{\fontsize{10.5pt}{\baselineskip}\selectfont}
+\newcommand{\xiaowu}{\fontsize{9.0pt}{\baselineskip}\selectfont}
+\newcommand{\liuhao}{\fontsize{7.5pt}{\baselineskip}\selectfont}
+\newcommand{\xiaoliu}{\fontsize{6.5pt}{\baselineskip}\selectfont}
+\newcommand{\qihao}{\fontsize{5.5pt}{\baselineskip}\selectfont}
+\newcommand{\bahao}{\fontsize{5.0pt}{\baselineskip}\selectfont}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+
+\begin{document}
+	%\maketitle
+	
+	\begin{titlepage}
+		
+		\begin{center}
+			
+			
+			% Upper part of the page
+			\includegraphics[width=0.65\textwidth]{figure/logo_xdred}\\[1cm]    
+			
+			\textsc{\LARGE \bfseries 人工智能学院}\\[1.5cm]
+			
+			\textsc{\Large 数字信号处理课程实验报告}\\[0.5cm]
+			
+			% Title
+			\HRule \\[0.4cm]
+			{ \huge \bfseries 实验 1: 信号的采样}\\[0.4cm]
+			
+			\HRule \\[1.5cm]
+			
+			\large \textbf{作者}(排名不分先后): \\[0.5cm]
+			% Author and supervisor
+			\begin{figure}[htbp]
+			\centering
+			\begin{minipage}[t]{0.3\textwidth}
+				\begin{center} \large
+					%\emph{Author:}\\
+					\textsc {\kaishu 杨文韬\\18020100245}
+			\end{center}
+			\end{minipage}
+			\hfill
+			\begin{minipage}[t]{0.3\textwidth}
+				\begin{center} \large
+					%\emph{Author:}\\
+					\textsc {\kaishu 刘浩\\19069100088}
+				\end{center}
+			\end{minipage}
+			\hfill
+			\begin{minipage}[t]{0.3\textwidth}
+				\begin{center} \large
+					%\emph{Author:}\\
+					\textsc {\kaishu 周泽熙\\19069100126}
+				\end{center}
+			\end{minipage}
+			\end{figure}
+			
+			
+			\vfill
+			
+			% Bottom of the page
+			{\large \today}
+			
+		\end{center}
+		
+	\end{titlepage}
+
+	\iffalse
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	\noindent
+	%\centering
+	\setmainfont{Courier New Bold}
+	\setcounter{page}{1}
+
+
+	\section{题目 2}
+	
+	\subsection{输入标准}
+	
+	在一行内表达式以字符串输入，以 \verb|#| 开始和结束，所有表达式中的数\textbf{均为 1 位}，运算结果不能超过 $2^{31}$，所有操作包括：加法 \lstinline|+|、减法 \verb|-|、乘法 \verb|*|、除法 \verb|/|、求幂 \verb|^|，输入到 EOF 表示所有输入结束。
+	
+	\textbf{需要特别注意的地方}：在涉及负数的操作时，例如 $-2$ 不能写成 $(-2)$ 而是写成 $(0-2)$，并且本程序不能求数的负数次幂，在求 $3^{2^{2^2}}$ 形式的多阶幂时，请输入 \verb|#3^(2^(2^2))#| 而不是 \verb|#3^2^2^2#|。
+	
+	
+	\subsection{输出标准}
+	
+	如果表达式合法，本程序首先会输出中缀表达式转换后得到的后缀表达式，之后输出表达式的结果；若不合法，则会输出错误提示信息。
+	
+	\subsection{思路}
+	
+	中缀表达式的求值一般有两种做法，常用的是转化为后缀表达式，另一种不常见的是递归法。本题我用的是第一种思想。
+	
+	1. 建立一个用于存运算符的栈 st，逐一扫描该中缀表达式中的元素。
+	
+	(1) 如果遇到一个数，输出该数。
+	
+	(2) 如果遇到左括号，左括号入栈。
+	
+	(3) 如果遇到右括号，不断取出栈顶输出，直到栈顶为左括号，然后把左括号出栈。
+	
+	(4) 如果遇到运算符，只要栈顶符号的优先级不低于新符号，就不断取出栈顶并输出，最后把新符号进栈。优先级：幂运算>乘除>加减>左括号。
+	
+	2. 依次取出并输出栈中的所有剩余符号，最终输出的序列就是一个与原中缀表达式等价的后缀表达式。
+	
+	
+	幂的计算是利用了 $a^k=\begin{cases}(a^{\frac{k}{2}})^2 \quad k\\a*(a^{\lfloor\frac{k}{2}\rfloor})^2 \quad k \end{cases}$
+	
+	下面是我验证过的输入数据
+	
+	\subsection{代码}
+	
+	\lstinputlisting[language=c++]{code/2.cpp}
+	
+	\section{题目 6}
+	\fi
+	
+\end{document}
